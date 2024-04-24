@@ -3,7 +3,14 @@ import csv
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# Crear la base de datos
+# Equipo 4
+# José Pablo Aguirr Rivera
+# Fernanda Isabel Vazquez Muñoz
+# Adriana Medina Nuñez
+# Cristina Suarez Franco
+
+
+# Crear el modelo de datos para los pokemones
 class Item(BaseModel):
  nombres: str
  types: str
@@ -14,9 +21,11 @@ class Item(BaseModel):
  sp_attack: int
  sp_def: int
  spped: int
- 
 
+# Crear la aplicación FastAPI
 app = FastAPI()
+
+# Crear el metodo y la ruta para agregar un pokemon
 @app.post("/agregar_pokemon/")
 async def agregar_pokemon(item: Item):
     conn = sqlite3.connect("mundo.db")
@@ -26,6 +35,8 @@ async def agregar_pokemon(item: Item):
     conn.close()
     return {"mensaje": "Datos agregados exitosamente"}
 
+
+# Crear el metodo y la ruta para leer los pokemones
 @app.get("/leer_pokemones/")
 async def leer_pokemones():
     conn = sqlite3.connect("mundo.db")
@@ -39,6 +50,7 @@ async def leer_pokemones():
         return {"mensaje": "No hay datos en la base de datos"}
 
 
+# Crear el metodo y la ruta para leer un pokemon
 @app.get("/leer_pokemones/{id}/")
 async def leer_pokemones(id: int):
     conn = sqlite3.connect("mundo.db")
@@ -51,6 +63,7 @@ async def leer_pokemones(id: int):
     else:
         return {"mensaje": "Datos no encontrados"}
 
+# Crear el metodo y la ruta para actualizar un pokemon
 @app.put("/actualizar_pokemon/{id}/")
 async def actualizar_pokemon(id: int, item: Item):
     conn = sqlite3.connect("mundo.db")
@@ -60,6 +73,7 @@ async def actualizar_pokemon(id: int, item: Item):
     conn.close()
     return {"mensaje": "Datos actualizados exitosamente"}
 
+# Crear el metodo y la ruta para eliminar un pokemon
 @app.delete("/eliminar_pokemon/{id}/")
 async def eliminar_pokemon(id: int):
     conn = sqlite3.connect("mundo.db")
@@ -69,13 +83,13 @@ async def eliminar_pokemon(id: int):
     conn.close()
     return {"mensaje": "Datos eliminados exitosamente"}
 
-
+# Crear el metodo para crear la tabla de pokemones en la base de datos "mundo.db"
 def create_pokemon_table():
     # Conexión a la base de datos "Mundo pokemon"
     conn = sqlite3.connect("mundo.db")
     # Crear un cursor para interactuar con la base de datos
     cursor = conn.cursor()
-    # Crear la tabla "ranking" si no existe
+    # Crear la tabla "pokemones" si no existe
     cursor.execute('''CREATE TABLE IF NOT EXISTS pokemones(
     id INTEGER PRIMARY KEY, 
     nombres TEXT NOT NULL, 
@@ -91,6 +105,7 @@ def create_pokemon_table():
     conn.commit()
     conn.close()
 
+# Crear el metodo para leer los datos del archivo CSV
 def read_csv_file(csv_file):
  # Leer el archivo CSV y guardar los datos en una lista de diccionarios
  with open(csv_file, newline='') as file:
@@ -98,12 +113,13 @@ def read_csv_file(csv_file):
     data = [row for row in reader]
  return data
 
+# Crear el metodo para insertar los datos en la tabla "pokemones"
 def insert_data_to_pokemon_table(data):
- # Conexión a la base de datos "hot100.db"
+ # Conexión a la base de datos "mundo.db"
  conn = sqlite3.connect("mundo.db")
  # Crear un cursor para interactuar con la base de datos
  cursor = conn.cursor()
- # Insertar cada fila de datos en la tabla "ranking"
+ # Insertar cada fila de datos en la tabla "pokemones"
  for row in data:
     cursor.execute("""
     INSERT INTO pokemones (nombres, types, total, hp, attack, defense, sp_attack, sp_def, spped)
@@ -115,15 +131,14 @@ def insert_data_to_pokemon_table(data):
 
 
 if __name__ == "__main__":
- 
     # Nombre del archivo CSV que contiene los datos
     csv_file = "pokemones.csv"
 
     # Leer los datos del archivo CSV y guardarlos en una lista de diccionarios
     data_to_insert = read_csv_file(csv_file)
 
-    # Crear la tabla "ranking" en la base de datos "hot100.db"
+    # Crear la tabla "ranking" en la base de datos "mundo.db"
     create_pokemon_table()
 
-    # Insertar los datos en la tabla "ranking" desde el archivo CSV
+    # Insertar los datos en la tabla "pokemones" desde el archivo CSV
     insert_data_to_pokemon_table(data_to_insert)
